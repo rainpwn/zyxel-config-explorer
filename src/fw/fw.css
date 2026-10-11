@@ -1,0 +1,199 @@
+/* Firewall mode: uOS-style view.
+   Scoped under .fwroot as a theme of its own (green on white like the
+   device). It skips the app tokens on purpose: fidelity to the Zyxel wins
+   over consistency with the rest of the app. */
+
+.fwroot {
+  /* bright Zyxel green: graphics only (status light, tab border), where 3:1
+     is enough. White-on-green text and green labels use green-dark (4.5:1). */
+  --fw-green: #3a9e00;
+  --fw-green-dark: #2b7500;
+  --fw-green-soft: #eaf4dd;
+  --fw-link: #3d7a12; /* 5.3:1 on white */
+  --fw-ink: #2b2f33;
+  --fw-ink-2: #5f6368;
+  --fw-ink-3: #6e7479; /* 4.7:1 on white, carries real data (Type, Content) */
+  --fw-bg: #f5f6f7;
+  --fw-surface: #ffffff;
+  --fw-border: #e2e5e8;
+  --fw-header: #f5f6f7;
+  --fw-row-alt: #fafafa;
+  --fw-hover: #f1f7ea;
+  --fw-red: #d23b3b;      /* status light (graphic) */
+  --fw-red-text: #bd2a2a; /* deny badge text, 5:1 on its background */
+
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  background: var(--fw-bg);
+  color: var(--fw-ink);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+}
+
+/* Topbar */
+
+.fwroot .fw-top {
+  display: flex; align-items: center; gap: 16px;
+  height: 48px; flex: none; padding: 0 16px;
+  background: var(--fw-surface); border-bottom: 1px solid var(--fw-border);
+}
+.fwroot .fw-brand { display: flex; flex-direction: column; gap: 2px; line-height: 1.2; }
+.fwroot .fw-brand .name { font-weight: 700; font-size: 15px; color: var(--fw-ink); }
+.fwroot .fw-model {
+  font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12.5px; color: var(--fw-ink-2);
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.fwroot .fw-top .sp { flex: 1; }
+.fwroot .fw-top .fw-topicons { display: flex; gap: 4px; color: var(--fw-ink-2); }
+.fwroot .fw-top .fw-topicons button {
+  display: grid; place-items: center; width: 30px; height: 30px;
+  border: none; background: none; color: inherit; border-radius: 50%; cursor: pointer;
+}
+.fwroot .fw-top .fw-topicons button:hover { background: var(--fw-bg); color: var(--fw-ink); }
+
+/* mode switch: back to Analysis */
+.fwroot .fw-mode {
+  display: inline-flex; border: 1px solid var(--fw-border); border-radius: 6px; overflow: hidden;
+}
+.fwroot .fw-mode button {
+  font: inherit; font-size: 12px; font-weight: 600;
+  border: none; background: var(--fw-surface); color: var(--fw-ink-3);
+  padding: 5px 12px; cursor: pointer;
+}
+.fwroot .fw-mode button + button { border-left: 1px solid var(--fw-border); }
+.fwroot .fw-mode button.on { background: var(--fw-green-dark); color: #fff; }
+
+/* Body: sidebar + content */
+
+.fwroot .fw-body { flex: 1; display: flex; min-height: 0; }
+
+.fwroot .fw-side {
+  width: 232px; flex: none; overflow-y: auto;
+  background: var(--fw-surface); border-right: 1px solid var(--fw-border);
+  padding-bottom: 24px;
+}
+.fwroot .fw-search {
+  display: flex; align-items: center; gap: 8px; margin: 10px;
+  padding: 6px 10px; border: 1px solid var(--fw-border); border-radius: 6px;
+  color: var(--fw-ink-3);
+}
+.fwroot .fw-search input { border: none; outline: none; font: inherit; font-size: 13px; width: 100%; background: none; color: var(--fw-ink); }
+
+.fwroot .fw-sec > .fw-sechead {
+  display: flex; align-items: center; gap: 12px; width: 100%;
+  padding: 10px 16px; border: none; background: none; cursor: pointer;
+  font: inherit; font-size: 14px; font-weight: 600; color: var(--fw-ink);
+  text-align: left;
+}
+.fwroot .fw-sec > .fw-sechead:hover { background: var(--fw-bg); }
+.fwroot .fw-sec > .fw-sechead .chev { margin-left: auto; color: var(--fw-ink-3); transition: transform 0.15s ease; }
+.fwroot .fw-sec.open > .fw-sechead .chev { transform: rotate(180deg); }
+.fwroot .fw-sec > .fw-sechead svg { color: var(--fw-ink-2); flex: none; }
+
+.fwroot .fw-leaf {
+  display: block; width: 100%; text-align: left;
+  padding: 8px 16px 8px 52px; border: none; background: none; cursor: pointer;
+  font: inherit; font-size: 13px; color: var(--fw-ink-2);
+}
+.fwroot .fw-leaf:hover { background: var(--fw-bg); color: var(--fw-ink); }
+.fwroot .fw-leaf.on { background: var(--fw-green-soft); color: var(--fw-green-dark); font-weight: 600; }
+
+/* Content area */
+
+.fwroot .fw-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+
+.fwroot .fw-crumb {
+  display: flex; align-items: center; gap: 8px; flex: none;
+  padding: 12px 20px; font-size: 15px; color: var(--fw-ink-2);
+}
+.fwroot .fw-crumb .back {
+  display: grid; place-items: center; width: 26px; height: 26px;
+  border: 1px solid var(--fw-border); border-radius: 50%;
+  background: var(--fw-surface); color: var(--fw-ink-2); cursor: pointer;
+}
+.fwroot .fw-crumb .sep { color: var(--fw-ink-3); }
+.fwroot .fw-crumb b { color: var(--fw-ink); font-weight: 600; }
+
+.fwroot .fw-tabs { display: flex; gap: 24px; padding: 0 20px; border-bottom: 1px solid var(--fw-border); flex: none; }
+.fwroot .fw-tabs button {
+  font: inherit; font-size: 14px; font-weight: 500; color: var(--fw-ink-2);
+  border: none; background: none; padding: 12px 2px; cursor: pointer;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+}
+.fwroot .fw-tabs button:hover { color: var(--fw-ink); }
+.fwroot .fw-tabs button.on { color: var(--fw-green-dark); border-bottom-color: var(--fw-green); font-weight: 600; }
+
+.fwroot .fw-sectitle { font-size: 14px; font-weight: 700; padding: 16px 20px 4px; }
+
+/* Toolbar + table */
+
+.fwroot .fw-toolbar {
+  display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+  padding: 8px 20px; margin: 8px 16px 0; flex: none;
+  border: 1px solid var(--fw-border); border-bottom: none; border-radius: 6px 6px 0 0;
+  background: var(--fw-surface);
+}
+.fwroot .fw-ro { font-size: 12px; font-weight: 600; color: var(--fw-ink-3); }
+.fwroot .fw-toolbar .sp { flex: 1; }
+.fwroot .fw-toolbar .fw-find {
+  display: flex; align-items: center; gap: 6px;
+  border: 1px solid var(--fw-border); border-radius: 6px; padding: 5px 10px;
+  color: var(--fw-ink-3);
+}
+.fwroot .fw-toolbar .fw-find input { border: none; outline: none; font: inherit; font-size: 12.5px; width: 150px; background: none; color: var(--fw-ink); }
+.fwroot .fw-toolbar .fw-find:focus-within { border-color: var(--fw-green-dark); box-shadow: 0 0 0 2px var(--fw-green-soft); }
+
+.fwroot .fw-tablewrap {
+  flex: 1; overflow: auto; margin: 0 16px 16px;
+  border: 1px solid var(--fw-border); border-top: none; border-radius: 0 0 6px 6px;
+  background: var(--fw-surface);
+}
+.fwroot table.fw-table { border-collapse: collapse; width: 100%; font-size: 13px; }
+.fwroot .fw-table th {
+  position: sticky; top: 0; z-index: 1;
+  background: var(--fw-header); color: var(--fw-ink-2); font-weight: 600;
+  text-align: left; white-space: nowrap; padding: 9px 12px;
+  border-bottom: 1px solid var(--fw-border); cursor: pointer; user-select: none;
+}
+.fwroot .fw-table th .sort { color: var(--fw-ink-3); margin-left: 3px; font-size: 10px; }
+.fwroot .fw-table th.nosort { cursor: default; }
+.fwroot .fw-table td {
+  padding: 8px 12px; border-bottom: 1px solid var(--fw-border);
+  color: var(--fw-ink); white-space: nowrap; vertical-align: middle;
+}
+.fwroot .fw-table tbody tr:nth-child(even) { background: var(--fw-row-alt); }
+.fwroot .fw-table tbody tr:hover { background: var(--fw-hover); }
+.fwroot .fw-table td.muted { color: var(--fw-ink-3); }
+.fwroot .fw-table td.wrap { white-space: normal; }
+
+
+/* status dot: a green/red light on the device */
+.fwroot .fw-status { display: inline-flex; }
+.fwroot .fw-status svg { color: var(--fw-green); }
+.fwroot .fw-status.off svg { color: var(--fw-red); }
+
+/* green links to objects, like on the device */
+.fwroot .fw-obj {
+  color: var(--fw-link); background: none; border: none; padding: 0; font: inherit; cursor: pointer;
+  text-decoration: none;
+}
+.fwroot .fw-obj:hover { text-decoration: underline; }
+.fwroot .fw-any { color: var(--fw-ink-3); }
+
+.fwroot .fw-grp { display: inline-flex; flex-wrap: wrap; gap: 4px; white-space: normal; }
+.fwroot .fw-grp .fw-obj::after { content: ','; color: var(--fw-ink-3); }
+.fwroot .fw-grp .fw-obj:last-child::after { content: ''; }
+
+.fwroot .fw-ref { font-variant-numeric: tabular-nums; color: var(--fw-ink-2); }
+.fwroot .fw-ref.zero { color: var(--fw-ink-3); }
+
+.fwroot .fw-empty { padding: 48px 20px; text-align: center; color: var(--fw-ink-3); }
+
+.fwroot .fw-badge {
+  font-size: 11px; font-weight: 600; padding: 1px 8px; border-radius: 10px;
+}
+.fwroot .fw-badge.deny { color: var(--fw-red-text); background: #fbe6e6; }
+.fwroot .fw-badge.allow { color: var(--fw-ink-2); }
+
+/* section with no data, or no config loaded */
+.fwroot .fw-note { padding: 8px 20px; color: var(--fw-ink-3); font-size: 12px; }
