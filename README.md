@@ -2,6 +2,8 @@
 
 [![Release](https://img.shields.io/github/v/release/rainpwn/zyxel-config-explorer)](https://github.com/rainpwn/zyxel-config-explorer/releases/latest)
 
+[![Buy me a coffee](https://img.shields.io/badge/buy_me_a_coffee-1a1d21?style=for-the-badge&labelColor=08090a&logo=buymeacoffee&logoColor=9FEF00)](https://buymeacoffee.com/rainpwn)
+
 See what's inside a Zyxel uOS firewall configuration at a glance.
 
 **Use it online: https://rainpwn.github.io/zyxel-config-explorer/.** Nothing to install, and your file never leaves your browser (see [Can I trust it with my config?](#can-i-trust-it-with-my-config)).
@@ -117,6 +119,10 @@ The code is a client-only React + TypeScript app built with Vite, with no runtim
 - `src/views/` has one component per sidebar view; `src/fw/` contains the Firewall view.
 
 Tests use synthetic fixtures in the real uOS line format. Please don't commit real configuration files: `*.conf` is git-ignored for that reason.
+
+## Support
+
+If this tool saved you some time, you can [buy me a coffee](https://buymeacoffee.com/rainpwn).
 
 ## License
 
