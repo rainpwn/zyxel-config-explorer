@@ -16,6 +16,14 @@ const CONF = `
 / object address-object address "ORFANO" "type" "host" "10.9.9.9"
 / object address-object group "SERVERS"
 / object address-object group "SERVERS" "address-list" "SERVER_11"
+/ object address-object address "DC01" "description" "Domain Controller" "type" "host" "10.0.0.20"
+/ object address-object address "RELAY" "type" "host" "192.88.99.1" "description" "Relay"
+/ object address-object address "LAN1_SUBNET" "description" "type" "type" "interface-subnet" "P11" "vrf" "main"
+/ object address-object group "ALL_SRV"
+/ object address-object group "ALL_SRV" "group-list" "SERVERS"
+/ object service-object service "API" "description" "API negozi" "type" "tcp" "8100"
+/ object service-object group "GRP_ALL"
+/ object service-object group "GRP_ALL" "group-list" "GRP_WEB"
 / object service-object service "RDP" "type" "tcp" "3389"
 / object service-object service "WEB" "type" "tcp" "80,443"
 / object service-object service "PING" "type" "icmp" "8"
@@ -108,6 +116,15 @@ describe('parseUos', () => {
     expect(cfg.addressGroups['SERVERS'].members).toEqual(['SERVER_11'])
     expect(cfg.services['WEB']).toMatchObject({ proto: 'tcp', value: '80,443' })
     expect(cfg.serviceGroups['GRP_WEB'].members).toEqual(['WEB'])
+  })
+
+  it('reads object properties in any order, with nested groups', () => {
+    expect(cfg.addresses['DC01']).toMatchObject({ type: 'host', value: '10.0.0.20', description: 'Domain Controller' })
+    expect(cfg.addresses['RELAY']).toMatchObject({ type: 'host', value: '192.88.99.1', description: 'Relay' })
+    expect(cfg.addresses['LAN1_SUBNET']).toMatchObject({ type: 'interface-subnet', value: 'P11', description: 'type' })
+    expect(cfg.addressGroups['ALL_SRV'].members).toEqual(['SERVERS'])
+    expect(cfg.services['API']).toMatchObject({ proto: 'tcp', value: '8100' })
+    expect(cfg.serviceGroups['GRP_ALL'].members).toEqual(['GRP_WEB'])
   })
 
   it('extracts rules in definition order', () => {

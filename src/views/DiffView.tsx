@@ -1,12 +1,12 @@
 import { useMemo, useRef, useState } from 'react'
 import type { FirewallConfig } from '../model'
-import { parseUos } from '../parser/uos'
+import { parseConfig } from '../parser'
 import { diffConfigs } from '../analysis'
 import { loc } from '../i18n'
 
 const s = loc({
   en: {
-    notUos: (name: string) => `${name} doesn't look like a Zyxel uOS configuration.`,
+    notUos: (name: string) => `${name} doesn't look like a Zyxel configuration.`,
     desc: ['Compares the loaded config (', ') with a second version (B). "Added" means only in B, "removed" means only in A, "changed" means the same name with different fields.'],
     change: (name: string) => `B: ${name} (change file)`,
     load: 'Load the second config (B)',
@@ -15,7 +15,7 @@ const s = loc({
     same: 'The two configurations are identical (in the sections compared).',
   },
   it: {
-    notUos: (name: string) => `${name} non sembra una configurazione Zyxel uOS.`,
+    notUos: (name: string) => `${name} non sembra una configurazione Zyxel.`,
     desc: ['Confronta la config caricata (', ') con una seconda versione (B). "Aggiunto" = presente solo in B, "rimosso" = presente solo in A, "modificato" = stesso nome con campi diversi.'],
     change: (name: string) => `B: ${name} (cambia file)`,
     load: 'Carica la seconda config (B)',
@@ -40,7 +40,7 @@ export default function DiffView({ cfg, filename }: { cfg: FirewallConfig; filen
 
   async function onFile(f: File | undefined) {
     if (!f) return
-    const parsed = parseUos(await f.text())
+    const parsed = parseConfig(await f.text())
     if (parsed.rules.length === 0 && parsed.zones.length === 0) {
       setErr(s.notUos(f.name))
       return

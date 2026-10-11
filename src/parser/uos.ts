@@ -11,6 +11,20 @@ function tokens(line: string): string[] {
   return out
 }
 
+// An object line can carry several properties, in any order:
+// ... address "X" "description" "D" "type" "host" "1.2.3.4" "vrf" "main"
+// Returns key -> following tokens, up to the next known key.
+const OBJECT_KEYS = new Set(['type', 'description', 'vrf', 'address-list', 'service-list', 'group-list'])
+function objectProps(t: string[]): Record<string, string[]> {
+  const out: Record<string, string[]> = {}
+  let cur: string[] | undefined
+  for (const tok of t.slice(5)) {
+    if (OBJECT_KEYS.has(tok) && (cur === undefined || cur.length > 0)) out[tok] = cur = []
+    else cur?.push(tok)
+  }
+  return out
+}
+
 // Parser for the flat Zyxel uOS format: one property per line.
 // Secrets (psk, password, hash) are never extracted: the parser
 // reads only the known paths listed below.
@@ -40,29 +54,25 @@ export function parseUos(text: string): FirewallConfig {
         if (t[5] === 'interface-list') z.interfaces.push(t[7])
         else if (t[5] === 'description') z.description = t[6]
       } else if (t[2] === 'address-object' && t[3] === 'address') {
-        if (t[5] === 'type') {
-          cfg.addresses[t[4]] = {
-            name: t[4], type: t[6], value: t.slice(7).join(' '),
-            description: cfg.addresses[t[4]]?.description,
-          }
-        } else if (t[5] === 'description') {
-          const a = cfg.addresses[t[4]]
-          if (a) a.description = t[6]
-          else cfg.addresses[t[4]] = { name: t[4], type: '', value: '', description: t[6] }
-        }
+        const p = objectProps(t)
+        const a = cfg.addresses[t[4]] ?? { name: t[4], type: '', value: '' }
+        cfg.addresses[t[4]] = a
+        if (p.type) { a.type = p.type[0]; a.value = p.type.slice(1).join(' ') }
+        if (p.description) a.description = p.description[0]
       } else if (t[2] === 'address-object' && t[3] === 'group') {
+        const p = objectProps(t)
         const g = cfg.addressGroups[t[4]] ?? { name: t[4], members: [] }
         cfg.addressGroups[t[4]] = g
-        if (t[5] === 'address-list') g.members.push(t[6])
-        else if (t[5] === 'description') g.description = t[6]
+        g.members.push(...(p['address-list'] ?? []), ...(p['group-list'] ?? []))
+        if (p.description) g.description = p.description[0]
       } else if (t[2] === 'service-object' && t[3] === 'service') {
-        if (t[5] === 'type') {
-          cfg.services[t[4]] = { name: t[4], proto: t[6], value: t.slice(7).join(' ') }
-        }
+        const p = objectProps(t)
+        if (p.type) cfg.services[t[4]] = { name: t[4], proto: p.type[0], value: p.type.slice(1).join(' ') }
       } else if (t[2] === 'service-object' && t[3] === 'group') {
+        const p = objectProps(t)
         const g = cfg.serviceGroups[t[4]] ?? { name: t[4], members: [] }
         cfg.serviceGroups[t[4]] = g
-        if (t[5] === 'service-list') g.members.push(t[6])
+        g.members.push(...(p['service-list'] ?? []), ...(p['group-list'] ?? []))
       }
       continue
     }

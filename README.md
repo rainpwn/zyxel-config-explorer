@@ -1,10 +1,10 @@
-# Config Explorer for Zyxel uOS
+# Config Explorer for Zyxel firewalls
 
 [![Release](https://img.shields.io/github/v/release/rainpwn/zyxel-config-explorer)](https://github.com/rainpwn/zyxel-config-explorer/releases/latest)
 
 [![Buy me a coffee](https://img.shields.io/badge/buy_me_a_coffee-1a1d21?style=for-the-badge&labelColor=08090a&logo=buymeacoffee&logoColor=9FEF00)](https://buymeacoffee.com/rainpwn)
 
-See what's inside a Zyxel uOS firewall configuration at a glance.
+See what's inside a Zyxel firewall configuration at a glance: uOS (USG FLEX H) and, in beta, ZLD (USG FLEX, ATP).
 
 **Use it online: https://rainpwn.github.io/zyxel-config-explorer/.** Nothing to install, and your file never leaves your browser (see [Can I trust it with my config?](#can-i-trust-it-with-my-config)).
 
@@ -42,7 +42,7 @@ You shouldn't have to take our word for it. A uOS `.conf` holds secrets: a real 
 1. **Pull the plug.** Open the page, then disconnect from the network (Wi-Fi off, cable out), then drop your file. The map, rules and findings all work, because the app needs nothing from the network once the page has loaded. Something that works offline has nowhere to send your data.
 2. **Watch the traffic.** Open the browser's developer tools on the Network tab, then drop a file. No request appears.
 3. **The browser blocks it anyway.** The published page carries a Content-Security-Policy, visible with "View page source". It lets the page load only its own files and blocks every connection to any other host, including `fetch`, images and beacons. If a malicious or careless script ever got in, the browser would still refuse to send anything out.
-4. **Secrets are never read.** The parser (`src/parser/uos.ts`) only picks up the settings it knows: zones, interfaces, objects, rules, NAT, routes, VPN endpoints. Keys and passwords are skipped, and a test (`src/parser/uos.test.ts`) fails if a pre-shared key ever ends up in the parsed result. Only that parsed result is kept in your browser's local storage, so the config survives a reload. "Close and remove" in the file menu clears it.
+4. **Secrets are never read.** The parsers (`src/parser/uos.ts`, `src/parser/zld.ts`) only pick up the settings it knows: zones, interfaces, objects, rules, NAT, routes, VPN endpoints. Keys and passwords are skipped, and their tests (`src/parser/*.test.ts`) fail if a pre-shared key or password hash ever ends up in the parsed result. Only that parsed result is kept in your browser's local storage, so the config survives a reload. "Close and remove" in the file menu clears it.
 5. **What runs is what you can read.** The site is built and published by a public GitHub Actions workflow (`.github/workflows/pages.yml`) from this repository. No other code is involved, and the build logs are public.
 
 **Still not comfortable?** Two more options:
@@ -102,7 +102,7 @@ The analysis works on the configuration text alone. It cannot know the live stat
 - The simulator treats every user and schedule as "any" and does not apply NAT. The result lists these assumptions.
 - FQDN and geography objects have no IP range, so they cannot be matched against an IP.
 - Only the IPv4 settings the parser recognises are used. Anything else in the file is ignored.
-- Developed against a USG FLEX 700H configuration. Other uOS models and firmware versions may use settings the parser does not know yet. If something is missing or wrong, an issue with the affected (anonymised) lines helps a lot.
+- Developed against a USG FLEX 700H configuration. ZLD support was developed against an ATP700 on firmware 5.41 and is in beta. Other models and firmware versions may use settings the parser does not know yet. If something is missing or wrong, an issue with the affected (anonymised) lines helps a lot.
 
 ## Development
 
@@ -113,12 +113,12 @@ npx tsc --noEmit    # typecheck
 
 The code is a client-only React + TypeScript app built with Vite, with no runtime dependencies beyond React.
 
-- `src/parser/uos.ts` parses the uOS line format into the model in `src/model.ts`.
+- `src/parser/uos.ts` (uOS line format) and `src/parser/zld.ts` (ZLD CLI blocks) parse into the model in `src/model.ts`; `src/parser/index.ts` picks one by format.
 - `src/derive.ts` contains IPv4 range arithmetic, object and group resolution, and zone lookups.
 - `src/analysis.ts` contains the simulator, failure impact, shadowed rules, orphan objects, WAN exposure and diff.
 - `src/views/` has one component per sidebar view; `src/fw/` contains the Firewall view.
 
-Tests use synthetic fixtures in the real uOS line format. Please don't commit real configuration files: `*.conf` is git-ignored for that reason.
+Tests use synthetic fixtures in the real uOS and ZLD formats. Please don't commit real configuration files: `*.conf` is git-ignored for that reason.
 
 ## Support
 

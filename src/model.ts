@@ -1,4 +1,4 @@
-// Neutral data model extracted from a Zyxel uOS config (USG FLEX H)
+// Neutral data model extracted from a Zyxel config (uOS or ZLD)
 
 export interface Zone {
   name: string

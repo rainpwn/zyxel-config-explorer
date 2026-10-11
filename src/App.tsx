@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { FirewallConfig } from './model'
-import { parseUos } from './parser/uos'
+import { parseConfig } from './parser'
 import { loadConfig, saveConfig, clearConfig, loadTheme, applyTheme, loadAppMode, saveAppMode } from './storage'
 import FwApp from './fw/FwApp'
 import { buildReport } from './report'
@@ -46,7 +46,7 @@ const s = loc({
     firewallTitle: 'See the config laid out like the firewall web interface',
     searchAria: 'Search by name or IP (Ctrl+K)',
     search: 'Search name or IP',
-    device: 'Zyxel uOS · USG FLEX H',
+    device: 'Zyxel uOS · ZLD',
     fileAria: (f: string) => `File ${f}: replace, report, close`,
     replace: 'Replace config…',
     report: 'Printable report',
@@ -64,15 +64,15 @@ const s = loc({
     },
     invAria: 'Inventory',
     sevCount: (d: number, w: number, i: number) => [`${d}`, ' danger', `${w}`, w === 1 ? ' warning' : ' warnings', `${i}`, ' info'],
-    lede: 'Reads the configuration of a Zyxel uOS firewall and draws the network: zones, traffic between them, exposed services and rules that never match.',
+    lede: 'Reads the configuration of a Zyxel firewall (uOS or ZLD) and draws the network: zones, traffic between them, exposed services and rules that never match.',
     dropAria: 'Load the firewall configuration file',
     dropTitle: 'Drop a .conf file here',
     dropText: 'or click to choose the file exported from the firewall',
-    compat: 'Zyxel uOS: USG FLEX H (e.g. 700H)',
+    compat: 'Zyxel uOS: USG FLEX H (e.g. 700H) · ZLD: USG FLEX, ATP (beta)',
     sample: 'Try a sample config',
     privacy: 'The file never leaves your browser and secrets are not read.',
     verify: 'How to verify',
-    notUos: (name: string) => `${name} doesn't look like a Zyxel uOS configuration: no zones or rules found.`,
+    notUos: (name: string) => `${name} doesn't look like a Zyxel configuration: no zones or rules found.`,
     sampleFail: 'Could not load the sample config.',
   },
   it: {
@@ -89,7 +89,7 @@ const s = loc({
     firewallTitle: "Vedi la config come nell'interfaccia del firewall",
     searchAria: 'Cerca per nome o IP (Ctrl+K)',
     search: 'Cerca nome o IP',
-    device: 'Zyxel uOS · USG FLEX H',
+    device: 'Zyxel uOS · ZLD',
     fileAria: (f: string) => `File ${f}: sostituisci, report, chiudi`,
     replace: 'Sostituisci config…',
     report: 'Report stampabile',
@@ -107,15 +107,15 @@ const s = loc({
     },
     invAria: 'Inventario',
     sevCount: (d: number, w: number, i: number) => [`${d}`, d === 1 ? ' pericolo' : ' pericoli', `${w}`, w === 1 ? ' avviso' : ' avvisi', `${i}`, ' info'],
-    lede: 'Legge la configurazione di un firewall Zyxel uOS e disegna la rete: zone, traffico tra loro, servizi esposti e regole che non scattano mai.',
+    lede: 'Legge la configurazione di un firewall Zyxel (uOS o ZLD) e disegna la rete: zone, traffico tra loro, servizi esposti e regole che non scattano mai.',
     dropAria: 'Carica il file di configurazione del firewall',
     dropTitle: 'Trascina qui un file .conf',
     dropText: 'o clicca per scegliere il file esportato dal firewall',
-    compat: 'Zyxel uOS: USG FLEX H (es. 700H)',
+    compat: 'Zyxel uOS: USG FLEX H (es. 700H) · ZLD: USG FLEX, ATP (beta)',
     sample: 'Prova con una config di esempio',
     privacy: 'Il file non lascia il browser e i segreti non vengono letti.',
     verify: 'Come verificarlo',
-    notUos: (name: string) => `${name} non sembra una configurazione Zyxel uOS: nessuna zona o regola trovata.`,
+    notUos: (name: string) => `${name} non sembra una configurazione Zyxel: nessuna zona o regola trovata.`,
     sampleFail: 'Impossibile caricare la config di esempio.',
   },
 })
@@ -215,7 +215,7 @@ export default function App() {
   } : {}, [cfg, found])
 
   function loadText(raw: string, name: string) {
-    const parsed = parseUos(raw)
+    const parsed = parseConfig(raw)
     if (parsed.rules.length === 0 && parsed.zones.length === 0) {
       setToast(s.notUos(name))
       return
