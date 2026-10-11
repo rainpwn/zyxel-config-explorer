@@ -28,6 +28,7 @@ type Theme = 'light' | 'dark'
 type Tab = 'map' | 'matrix' | 'routes' | 'rules' | 'expo' | 'objects' | 'findings' | 'sim' | 'diff'
 
 // README section with checks anyone can run (offline test, Network tab, CSP)
+const RELEASES_URL = 'https://github.com/rainpwn/zyxel-config-explorer/releases'
 const TRUST_URL = 'https://github.com/rainpwn/zyxel-config-explorer#can-i-trust-it-with-my-config'
 
 const s = loc({
@@ -403,7 +404,10 @@ export default function App() {
               })}
             </div>
           ))}
-          <p className="navfoot">{s.navFoot}</p>
+          <p className="navfoot">
+            {s.navFoot}
+            <a className="navver" href={RELEASES_URL} target="_blank" rel="noopener noreferrer">v{__APP_VERSION__}</a>
+          </p>
         </nav>
       )}
 

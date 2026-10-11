@@ -355,6 +355,11 @@ input[type='checkbox'] { accent-color: var(--ink); width: 14px; height: 14px; ma
   border-top: 1px solid var(--border);
   font-size: var(--t-sm); color: var(--ink-3);
 }
+.navver {
+  display: block; margin-top: var(--s-2); width: fit-content;
+  font-family: var(--font-mono); color: var(--ink-3); text-decoration: none;
+}
+.navver:hover { color: var(--ink); text-decoration: underline; }
 
 /* Views */
 

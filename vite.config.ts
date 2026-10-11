@@ -1,5 +1,6 @@
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
+import pkg from './package.json'
 
 // Privacy enforced by the browser: the built page may load its own files and
 // nothing else, and may not connect anywhere but its own origin (the bundled
@@ -21,6 +22,7 @@ const CSP = [
 export default defineConfig({
   // relative paths: works under GitHub Pages' /<repo>/ and any static host
   base: './',
+  define: { __APP_VERSION__: JSON.stringify(pkg.version) },
   plugins: [
     react(),
     {
