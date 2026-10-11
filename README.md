@@ -1,5 +1,7 @@
 # Config Explorer for Zyxel uOS
 
+[![Release](https://img.shields.io/github/v/release/rainpwn/zyxel-config-explorer)](https://github.com/rainpwn/zyxel-config-explorer/releases/latest)
+
 See what's inside a Zyxel uOS firewall configuration at a glance.
 
 **Use it online: https://rainpwn.github.io/zyxel-config-explorer/.** Nothing to install, and your file never leaves your browser (see [Can I trust it with my config?](#can-i-trust-it-with-my-config)).
