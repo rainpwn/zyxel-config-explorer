@@ -6,6 +6,8 @@
 
 See what's inside a Zyxel firewall configuration at a glance: uOS (USG FLEX H) and, in beta, ZLD (USG FLEX, ATP).
 
+Tested on configurations from a USG FLEX 700H (uOS) and an ATP700 on firmware 5.41 (ZLD). If something in yours is missing or wrong, [report it](https://github.com/rainpwn/zyxel-config-explorer/issues/new?template=config-report.yml).
+
 **Use it online: https://rainpwn.github.io/zyxel-config-explorer/.** Nothing to install, and your file never leaves your browser (see [Can I trust it with my config?](#can-i-trust-it-with-my-config)).
 
 ![Map view of the bundled sample configuration, DMZ selected](docs/screenshot.png)
@@ -102,7 +104,7 @@ The analysis works on the configuration text alone. It cannot know the live stat
 - The simulator treats every user and schedule as "any" and does not apply NAT. The result lists these assumptions.
 - FQDN and geography objects have no IP range, so they cannot be matched against an IP.
 - Only the IPv4 settings the parser recognises are used. Anything else in the file is ignored.
-- Developed against a USG FLEX 700H configuration. ZLD support was developed against an ATP700 on firmware 5.41 and is in beta. Other models and firmware versions may use settings the parser does not know yet. If something is missing or wrong, an issue with the affected (anonymised) lines helps a lot.
+- Developed against a USG FLEX 700H configuration. ZLD support was developed against an ATP700 on firmware 5.41 and is in beta. Other models and firmware versions may use settings the parser does not know yet. If something is missing or wrong, [an issue](https://github.com/rainpwn/zyxel-config-explorer/issues/new?template=config-report.yml) with the affected (anonymised) lines helps a lot.
 
 ## Development
 

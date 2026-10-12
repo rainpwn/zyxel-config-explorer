@@ -1,0 +1,70 @@
+name: Config report
+description: Something in your firewall configuration is missing or shown wrong
+title: "[config] MODEL FIRMWARE: WHAT IS WRONG"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. **Do not attach your whole `.conf`**: it holds pre-shared keys and passwords. Paste only the few lines involved, anonymised.
+  - type: input
+    id: model
+    attributes:
+      label: Firewall model
+      placeholder: USG FLEX 700H
+    validations:
+      required: true
+  - type: input
+    id: firmware
+    attributes:
+      label: Firmware version
+      placeholder: V1.31(ABZH.1)
+    validations:
+      required: true
+  - type: dropdown
+    id: format
+    attributes:
+      label: Configuration format
+      options:
+        - uOS (USG FLEX H)
+        - ZLD (USG FLEX, ATP, VPN)
+    validations:
+      required: true
+  - type: dropdown
+    id: problem
+    attributes:
+      label: Problem
+      options:
+        - The file does not load
+        - A setting is missing
+        - A setting is shown wrong
+        - A finding is wrong or missing
+        - The simulator gives the wrong result
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: view
+    attributes:
+      label: View
+      placeholder: Rules
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected and what you got
+    validations:
+      required: true
+  - type: textarea
+    id: lines
+    attributes:
+      label: The configuration lines involved
+      description: >-
+        Replace public addresses, names and anything identifying with placeholders, keeping the structure intact.
+        Remove keys, passwords and SNMP communities: the README shows a one-line command that strips them.
+      render: text
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser
+      placeholder: Firefox 131
